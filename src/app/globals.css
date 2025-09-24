@@ -1,0 +1,237 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+:root {
+  /* Brand colors */
+  --indigo: #5A4DFF;
+  --pink: #FF4D9D;
+  --cyan: #2DFFF0;
+  --deep-space: #0B0C10;
+  --light-gray: #FAFAFA;
+  
+  /* Base spacing */
+  --spacing-base: 4px;
+  --section-padding: 48px;
+  --section-padding-lg: 80px;
+}
+
+/* Skip link for accessibility */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--indigo);
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  border-radius: 4px;
+  z-index: 1000;
+  opacity: 0;
+  transition: all 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 6px;
+  opacity: 1;
+}
+
+/* Base styles */
+body {
+  background: var(--light-gray);
+  color: var(--deep-space);
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ensure proper text contrast */
+.text-gray-700 {
+  color: #374151 !important; /* Darker gray for better contrast */
+}
+
+.text-gray-600 {
+  color: #1F2937 !important; /* Dark gray for better contrast on light backgrounds */
+}
+
+.text-gray-500 {
+  color: #374151 !important; /* Dark gray for better contrast on light backgrounds */
+}
+
+/* Headings use Poppins */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* Focus styles for accessibility */
+*:focus {
+  outline: 2px solid var(--indigo);
+  outline-offset: 2px;
+}
+
+/* Navigation link styles */
+.nav-link {
+  position: relative;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--indigo), var(--pink));
+  transition: width 0.3s ease;
+  border-radius: 1px;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+.nav-link:focus {
+  outline: none;
+}
+
+.nav-link:focus::after {
+  width: 100%;
+}
+
+/* Footer link styles */
+.footer-link {
+  position: relative;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-weight: 400;
+}
+
+.footer-link:hover {
+  font-weight: 600;
+  text-shadow: 0 0 8px rgba(99, 102, 241, 0.3);
+  transform: translateY(-1px);
+}
+
+.footer-link:focus {
+  outline: none;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Glass card effect */
+.glass-card {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+/* Gradient CTA */
+.gradient-cta {
+  background: linear-gradient(135deg, var(--indigo) 0%, var(--pink) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.gradient-cta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.gradient-cta:hover::before {
+  left: 100%;
+}
+
+.gradient-cta:hover {
+  background: linear-gradient(135deg, #4A3DE6 0%, #E63D8A 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(90, 77, 255, 0.3);
+}
+
+/* Modern gradient backgrounds */
+.gradient-hero {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.gradient-card {
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+/* Interactive hover effects */
+.interactive-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.interactive-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+/* Floating animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.floating {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Professional loading states */
+.loading-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Enhanced focus states for accessibility */
+.focus-visible {
+  outline: 2px solid var(--indigo);
+  outline-offset: 2px;
+}
+
+/* Professional shadows */
+.shadow-professional {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.shadow-professional-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
