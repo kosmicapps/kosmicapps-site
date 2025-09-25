@@ -66,6 +66,14 @@ export async function POST(request: NextRequest) {
 
     // Check if username matches the authorized username
     const authorizedUsername = process.env.ACCESS_USERNAME;
+    console.log('Username validation in send-access-key:', {
+      sanitizedUsername,
+      authorizedUsername,
+      sanitizedLower: sanitizedUsername.toLowerCase(),
+      authorizedLower: authorizedUsername?.toLowerCase(),
+      match: sanitizedUsername.toLowerCase() === authorizedUsername?.toLowerCase()
+    });
+    
     if (!authorizedUsername) {
       console.error('ACCESS_USERNAME environment variable not set');
       return NextResponse.json(
@@ -75,6 +83,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (sanitizedUsername.toLowerCase() !== authorizedUsername.toLowerCase()) {
+      console.log('Username validation failed in send-access-key');
       return NextResponse.json(
         { error: 'Unauthorized username' },
         { status: 403 }
@@ -106,12 +115,19 @@ export async function POST(request: NextRequest) {
     const now = new Date().toISOString();
 
     // Store the access key
-    accessKeyStore.set(sanitizedEmail, {
+    const keyData = {
       key: accessKey,
       email: sanitizedEmail,
       username: sanitizedUsername,
       createdAt: now
-    });
+    };
+    
+    console.log('Storing access key data:', keyData);
+    accessKeyStore.set(sanitizedEmail, keyData);
+    
+    // Verify storage
+    const stored = accessKeyStore.get(sanitizedEmail);
+    console.log('Verification - stored data:', stored);
 
     // Send access key email
     const emailResult = await resend.emails.send({

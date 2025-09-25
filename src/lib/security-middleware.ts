@@ -5,7 +5,9 @@ import {
   banIP, 
   scanForThreats, 
   recordSuspiciousActivity,
-  logSecurityEvent 
+  logSecurityEvent,
+  sanitizeInput,
+  sanitizeUsername
 } from './admin-security';
 
 // Security middleware for all form endpoints
@@ -82,8 +84,12 @@ export function validateFormSecurity(request: NextRequest, formData: Record<stri
         recordSuspiciousActivity(clientIP, `Threat detected in field ${key}: ${threatScan.threats.map(t => t.type).join(', ')}`);
       }
       
-      // Sanitize the input
-      sanitizedData[key] = sanitizeInput(value);
+      // Sanitize the input - use username-specific sanitization for username field
+      if (key === 'username') {
+        sanitizedData[key] = sanitizeUsername(value);
+      } else {
+        sanitizedData[key] = sanitizeInput(value);
+      }
     } else {
       sanitizedData[key] = value;
     }
@@ -119,19 +125,6 @@ export function validateFormSecurity(request: NextRequest, formData: Record<stri
   };
 }
 
-// Sanitize input function (imported from admin-security)
-function sanitizeInput(input: string): string {
-  if (!input || typeof input !== 'string') return '';
-  
-  // Basic sanitization for legitimate input
-  return input
-    .replace(/[<>]/g, '') // Remove < and >
-    .replace(/javascript:/gi, '') // Remove javascript: protocol
-    .replace(/on\w+=/gi, '') // Remove event handlers
-    .replace(/['"]/g, '') // Remove quotes
-    .replace(/[;|&$`]/g, '') // Remove command injection chars
-    .trim();
-}
 
 // Rate limiting for form submissions
 const formSubmissionLimits = new Map<string, { count: number; resetTime: number }>();

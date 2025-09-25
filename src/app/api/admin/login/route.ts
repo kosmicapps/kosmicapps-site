@@ -146,7 +146,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    console.log('Username validation:', {
+      sanitizedUsername,
+      authorizedUsername,
+      sanitizedLower: sanitizedUsername.toLowerCase(),
+      authorizedLower: authorizedUsername.toLowerCase(),
+      match: sanitizedUsername.toLowerCase() === authorizedUsername.toLowerCase()
+    });
+
     if (sanitizedUsername.toLowerCase() !== authorizedUsername.toLowerCase()) {
+      console.log('Username validation failed');
       recordFailedAttempt(fingerprint);
       return NextResponse.json(
         { 

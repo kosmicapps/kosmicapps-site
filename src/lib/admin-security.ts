@@ -637,6 +637,33 @@ export function sanitizeInput(input: string): string {
     .trim();
 }
 
+// Sanitize username specifically (less aggressive sanitization)
+export function sanitizeUsername(input: string): string {
+  if (!input || typeof input !== 'string') return '';
+  
+  // First, scan for threats
+  const threatScan = scanForThreats(input);
+  if (threatScan.isThreat) {
+    // Log the threat attempt
+    logSecurityEvent('THREAT_DETECTED', {
+      input: input.substring(0, 100), // Log first 100 chars
+      threats: threatScan.threats,
+      timestamp: new Date().toISOString()
+    });
+    
+    // Return empty string for malicious input
+    return '';
+  }
+  
+  // Light sanitization for usernames (preserve quotes and common characters)
+  return input
+    .replace(/[<>]/g, '') // Remove < and >
+    .replace(/javascript:/gi, '') // Remove javascript: protocol
+    .replace(/on\w+=/gi, '') // Remove event handlers
+    .replace(/[;|&$`]/g, '') // Remove command injection chars
+    .trim();
+}
+
 // Security event logging
 export function logSecurityEvent(eventType: string, data: Record<string, unknown>): void {
   console.warn(`SECURITY_EVENT: ${eventType}`, {
