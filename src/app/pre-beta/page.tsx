@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, Users, Zap, CheckCircle } from 'lucide-react';
 import { apps } from '@/data/apps';
+import { useFormTracking } from '@/lib/form-tracking';
 
 export default function PreBetaPage() {
   const [formData, setFormData] = useState({
@@ -15,6 +16,9 @@ export default function PreBetaPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  
+  // Initialize form tracking
+  const { trackFieldFocus, trackFieldBlur, trackFormSubmit } = useFormTracking();
 
   // Get pre-beta apps
   const preBetaApps = apps.filter(app => app.availability === 'pre-beta');
@@ -27,9 +31,20 @@ export default function PreBetaPage() {
     }));
   };
 
+  const handleFieldFocus = (fieldName: string) => {
+    trackFieldFocus(fieldName, formData);
+  };
+
+  const handleFieldBlur = (fieldName: string) => {
+    trackFieldBlur(fieldName, formData);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    // Track form submission attempt
+    trackFormSubmit(formData);
 
     try {
       const response = await fetch('/api/pre-beta', {
@@ -42,6 +57,21 @@ export default function PreBetaPage() {
 
       if (response.ok) {
         setIsSubmitted(true);
+        
+        // Confirm signup in database after successful email send
+        try {
+          await fetch('/api/pre-beta/confirm', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData),
+          });
+        } catch (confirmError) {
+          console.error('Error confirming signup:', confirmError);
+          // Don't block the user flow if confirmation fails
+        }
+        
         // Redirect to thank you page after 2 seconds
         setTimeout(() => {
           window.location.href = '/pre-beta/thank-you';
@@ -224,6 +254,8 @@ export default function PreBetaPage() {
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
+                  onFocus={() => handleFieldFocus('name')}
+                  onBlur={() => handleFieldBlur('name')}
                   required
                   className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-300"
                   placeholder="Enter your full name"
@@ -241,6 +273,8 @@ export default function PreBetaPage() {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
+                  onFocus={() => handleFieldFocus('email')}
+                  onBlur={() => handleFieldBlur('email')}
                   required
                   className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-300"
                   placeholder="your@email.com"
@@ -258,6 +292,8 @@ export default function PreBetaPage() {
                   name="socialMedia"
                   value={formData.socialMedia}
                   onChange={handleInputChange}
+                  onFocus={() => handleFieldFocus('socialMedia')}
+                  onBlur={() => handleFieldBlur('socialMedia')}
                   className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-300"
                   placeholder="@username or profile link"
                 />
@@ -273,6 +309,8 @@ export default function PreBetaPage() {
                   name="appSelection"
                   value={formData.appSelection}
                   onChange={handleInputChange}
+                  onFocus={() => handleFieldFocus('appSelection')}
+                  onBlur={() => handleFieldBlur('appSelection')}
                   required
                   className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-300"
                 >
@@ -295,6 +333,8 @@ export default function PreBetaPage() {
                   name="comments"
                   value={formData.comments}
                   onChange={handleInputChange}
+                  onFocus={() => handleFieldFocus('comments')}
+                  onBlur={() => handleFieldBlur('comments')}
                   rows={4}
                   className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-300 resize-none"
                   placeholder="Tell us about your accessibility needs, what you're most excited about, or any questions you have..."

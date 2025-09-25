@@ -1,0 +1,219 @@
+---
+description: You are the Cursor agent building a fully functional, production-ready marketing website for Kosmic Apps — an independent iOS app studio. You will act as Senior Frontend Engineer + UX Writer. Follow the phases below exactly, meeting the acceptance criteria before moving on. No careers/employment content. Enforce one primary goal per page, drive users to Get the apps.
+globs: 
+alwaysApply: true
+constraints: "No code in this prompt pack. Translate all instructions into implementation tasks within Cursor as you execute. Single primary CTA across the site: ‘Get the apps’ linking to /apps. Use placeholder assets for app icons and screenshots. All page copy is provided below; do not invent extra copy beyond micro-UX text and alt labels. Keep the site lean, fast, and accessible (WCAG AA)."
+
+---
+**Note:** I am on an Windows PC. This is not an Linux enviourment. PowerShell must be used instead.
+# Phase 0 — Foundation & Tech Setup (planning)
+
+* Plan Next.js 14 (App Router) with TypeScript and Tailwind.
+* Include: Framer Motion, minimal UI kit (buttons/cards), Plausible/Umami analytics, sitemap generation, OG image support.
+* Routes: /, /apps, /apps/\[slug], /about, /press, /legal, /story, 404.
+* File structure separates components, data, lib, and app routes.
+
+Acceptance:
+
+* Clear project skeleton documented, ready to scaffold.
+
+---
+
+# Phase 1 — Brand System & Tokens
+
+* Colors: Indigo #5A4DFF, Pink #FF4D9D, Cyan #2DFFF0, Deep Space Black #0B0C10, Light Gray #FAFAFA.
+* Fonts: Poppins (headlines), Inter (body).
+* Style: Rounded-2xl, soft shadows, glass cards, gradient CTA, ghost variant.
+* Spacing: 4px base, 48–80px section padding.
+* Motion: subtle fade/slide, respect reduced-motion.
+* A11y: WCAG AA contrast, skip link, visible focus.
+
+Acceptance:
+
+* Tokens and rules locked in.
+
+---
+
+# Phase 2 — Global Components (specs)
+
+* SiteNav: Kosmic logo left; links → Apps, Story, About, Press/Contact; CTA → Get the apps.
+* Footer: © YEAR; links → Privacy, Terms, Support (mailto), optional Story.
+* Section wrapper: rhythm + centered container.
+* PrimaryCTA: gradient pill button.
+* AppCard: icon, name, hook, model; Download (external), Details (internal). Disabled if no URL.
+* FilterChips: All + unique categories; active chip visually distinct.
+
+Acceptance:
+
+* Components specified with states and a11y behaviors.
+
+---
+
+# Phase 3 — Data Model & Analytics (specs)
+
+App data fields:
+
+* slug, name, hook, model, category, pricingType, appStoreUrl, icon, features131 (core/support/delight), features (3–7), screenshots, faq (optional).
+
+Seed with three entries:
+
+1. Cosmic Breathe — slug cosmic-breathe; hook “Breathe in, glow out — 30 seconds to reset.”; model Free + \$1.99 one-time unlock; category Wellness; pricingType one-time; features131: core 30s breathing timer; support streaks; delight cosmic visuals.
+
+2. Focus Orbit — slug focus-orbit; hook “Stay in flow with 25-minute cosmic sprints.”; model Free + Pro subscription; category Productivity; pricingType subscription; features131: core pomodoro sprints; support distraction blocker; delight orbital animation.
+
+3. Lunar Lists — slug lunar-lists; hook “Tasks that feel light-years simpler.”; model Free; category Lifestyle; pricingType free; features131: core minimalist to-do list; support iCloud sync; delight lunar theme.
+
+Analytics events:
+
+* view\_home, click\_cta\_home, view\_apps\_index, filter\_category, click\_app\_download, view\_app\_detail, submit\_press\_form.
+
+Acceptance:
+
+* Data schema locked, 3 seed apps defined, event map documented.
+
+---
+
+# Phase 4 — Page Blueprints & Copy
+
+## 4.1 Home (/)
+
+Hero headline: Apps that hit different.
+Hero subhead: One founder. A full AI-driven studio. We ship lean, playful iOS apps with viral hooks and zero bloat.
+Primary CTA: Get the apps.
+Why Kosmic: 3 cards with copy (Lean by design, AI-powered team, Market-driven).
+Featured Apps title: Featured apps (pulls first 3).
+CTA band: Ready to play? → Get the apps.
+
+Acceptance: Copy verbatim, CTA to /apps.
+
+## 4.2 Apps Index (/apps)
+
+Headline: Small, bold, addictive.
+Filter chips, grid of AppCards, empty state “No apps in this category yet.”
+
+Acceptance: Filter works client-side, cards show name/hook/model.
+
+## 4.3 App Detail (/apps/\[slug])
+
+Hero with icon, name, hook, Download button.
+Why you’ll love it (Core, Support, Delight).
+Features, Screenshots, FAQ.
+Final CTA: Ready? → Get it now.
+Download disabled state text: App Store URL coming soon.
+
+Acceptance: Unknown slug → friendly 404. Disabled if no URL.
+
+## 4.4 About (/about)
+
+Hero headline: Indie studio. Million-dollar output.
+Hero subhead: One founder, a full AI team, and a repeatable ship-fast playbook.
+Cards: What we do, How we work, Values, Ambition.
+Inline link: Read the origin story → /story.
+CTA: Explore our apps → Get the apps.
+
+Acceptance: Copy matches verbatim, inline story link present.
+
+## 4.5 Story (/story)
+
+Hero headline: The Kosmic Story.
+Hero subhead: From SaaS complexity to the joy of shipping lean, living apps.
+Narrative: 5 paragraphs (from Founder’s Note) provided verbatim.
+Vision list: Year 1, Year 5.
+Closing sentence: If there’s one feeling I want this story to leave you with, it’s simple: inspired.
+CTA: Explore what we’re building → Get the apps.
+
+Acceptance: Narrative copy exact, CTA links to /apps.
+
+## 4.6 Press & Contact (/press)
+
+Title: Press & Contact.
+Blurb: Kosmic Apps is the indie studio making bold, shareable iOS apps—fast. We compress categories to their viral core, skip the bloat, and ship apps people want to show their friends.
+Fast facts: AI-powered studio · 1+1+1 product rule · Market-driven pricing · Indie vibe.
+Button: Download Press Kit (zip).
+Form: Name, Email, Outlet, Message. Submit → Send inquiry.
+Helper: Or email [hello@example.com](mailto:hello@example.com).
+
+Acceptance: Validates required fields, success message without reload.
+
+## 4.7 Legal (/legal)
+
+Privacy Policy: We collect only what’s needed to run our apps and improve the experience. We do not sell your data. Contact us for any privacy questions.
+Terms: By using our apps and site, you agree to play nice, respect intellectual property, and follow applicable laws. We may update these terms from time to time.
+
+Acceptance: Anchors #privacy, #terms.
+
+## 4.8 404
+
+Headline: Lost in space.
+Subtext: That page drifted beyond our orbit.
+Button: Back to home.
+
+Acceptance: Loads for unknown routes, back link works.
+
+---
+
+# Phase 5 — Forms & API
+
+* /api/contact stub. Returns JSON { ok: true/false }.
+* Validate Name, Email (pattern), Message.
+* States: Idle, Submitting, Success, Error.
+* Bot deterrent (honeypot or time-based).
+
+Acceptance: Submits in dev, clear feedback.
+
+---
+
+# Phase 6 — SEO & Sharing
+
+* Default metadata: “%s — Kosmic Apps”, description “Indie iOS studio shipping lean, playful apps with viral hooks and zero bloat.”
+* Route-specific titles/descriptions.
+* Sitemap.xml, robots.txt.
+* OG/Twitter cards: Home, Apps, App Detail (brand gradient + title).
+* JSON-LD for App Detail.
+
+Acceptance: Shares render correctly; sitemap and robots served.
+
+---
+
+# Phase 7 — Performance & A11y
+
+* JS budget ≤150KB gzipped on Home.
+* Lazy-load images.
+* Only one analytics script.
+* A11y: Keyboard nav, focus visible, skip link, semantic headings.
+
+Acceptance: Lighthouse ≥95 (Perf, A11y, Best Practices) on Home and Apps.
+
+---
+
+# Phase 8 — Analytics Wiring
+
+* Defer analytics script.
+* Fire events from Phase 3 at correct times.
+* Outbound links include rel=noopener.
+
+Acceptance: Events logged in analytics.
+
+---
+
+# Phase 9 — Deployment
+
+* Env vars: site URL, analytics ID.
+* SEO base URL consistent.
+* Production build artifact verified: routes resolve, form works, sitemap/robots present, OG images render.
+
+Acceptance: Prod build passes, preview deploy works.
+
+---
+
+# Phase 10 — QA & Handoff
+
+* CTAs route correctly.
+* /apps filters behave.
+* /apps/\[slug] shows 1+1+1, features, screenshots, FAQ.
+* /press form validates and states.
+* /story uses exact narrative, CTA to /apps.
+* /legal includes Privacy & Terms with anchors.
+* No careers content.
+* Lighthouse ≥95 on Home and Apps.
+* A11y checks pass.

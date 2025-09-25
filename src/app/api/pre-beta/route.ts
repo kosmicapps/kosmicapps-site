@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import { supabase } from '@/lib/supabase';
+import { securityMiddleware, validateFormSecurity, addSecurityHeaders } from '@/lib/security-middleware';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
   try {
+    // Apply security middleware
+    const securityCheck = securityMiddleware(request);
+    if (securityCheck) return securityCheck;
+
     const body = await request.json();
     const { name, email, socialMedia, appSelection, comments } = body;
 
@@ -16,14 +22,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Enhanced security validation
+    const securityValidation = validateFormSecurity(request, { name, email, socialMedia, appSelection, comments });
+    if (!securityValidation.isValid) {
+      return securityValidation.response!;
+    }
+
+    // Use sanitized data
+    const sanitizedData = securityValidation.sanitizedData!;
+
     // Get app details for the email
     const { apps } = await import('@/data/apps');
-    const selectedApp = apps.find(app => app.slug === appSelection);
+    const selectedApp = apps.find(app => app.slug === sanitizedData.appSelection);
 
     // Send confirmation email
     const emailResult = await resend.emails.send({
       from: 'Kosmic Apps <hello@kosmicapps.com>',
-      to: [email],
+      to: [sanitizedData.email],
       subject: `Welcome to ${selectedApp?.name || 'Pre-Beta'} - You're In! 🚀`,
       html: `
         <!DOCTYPE html>
@@ -61,7 +76,7 @@ export async function POST(request: NextRequest) {
             </div>
 
             <div class="content">
-              <p style="color: white; font-size: 18px; margin: 0 0 20px;">Hi ${name},</p>
+              <p style="color: white; font-size: 18px; margin: 0 0 20px;">Hi ${sanitizedData.name},</p>
               
               <p style="color: #e0e0e0; line-height: 1.6; margin: 0 0 20px;">
                 Welcome to the Kosmic Apps pre-beta program! We're thrilled to have you join our community of early adopters who are helping shape the future of accessible technology.
@@ -110,15 +125,15 @@ export async function POST(request: NextRequest) {
                 <a href="https://kosmicapps.com/apps" class="cta-button">Explore Our Apps</a>
               </div>
 
-              ${socialMedia ? `
+              ${sanitizedData.socialMedia ? `
               <p style="color: #e0e0e0; margin: 20px 0;">
-                <strong>Social Media:</strong> ${socialMedia}
+                <strong>Social Media:</strong> ${sanitizedData.socialMedia}
               </p>
               ` : ''}
 
-              ${comments ? `
+              ${sanitizedData.comments ? `
               <p style="color: #e0e0e0; margin: 20px 0;">
-                <strong>Your Comments:</strong> ${comments}
+                <strong>Your Comments:</strong> ${sanitizedData.comments}
               </p>
               ` : ''}
             </div>
@@ -130,7 +145,7 @@ export async function POST(request: NextRequest) {
                 <a href="mailto:hello@kosmicapps.com" class="social-link">Contact</a>
               </div>
               <p style="margin-top: 20px; font-size: 12px; color: #666;">
-                This email was sent to ${email} because you signed up for our pre-beta program.
+                This email was sent to ${sanitizedData.email} because you signed up for our pre-beta program.
               </p>
             </div>
           </div>
@@ -154,16 +169,17 @@ export async function POST(request: NextRequest) {
       subject: `New Pre-Beta Signup: ${name} - ${selectedApp?.name || 'Unknown App'}`,
       html: `
         <h2>New Pre-Beta Signup</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Social Media:</strong> ${socialMedia || 'Not provided'}</p>
+        <p><strong>Name:</strong> ${sanitizedData.name}</p>
+        <p><strong>Email:</strong> ${sanitizedData.email}</p>
+        <p><strong>Social Media:</strong> ${sanitizedData.socialMedia || 'Not provided'}</p>
         <p><strong>Selected App:</strong> ${selectedApp?.name || 'Unknown'}</p>
-        <p><strong>Comments:</strong> ${comments || 'None'}</p>
+        <p><strong>Comments:</strong> ${sanitizedData.comments || 'None'}</p>
         <p><strong>Timestamp:</strong> ${new Date().toISOString()}</p>
       `,
     });
 
-    return NextResponse.json({ success: true });
+    const response = NextResponse.json({ success: true });
+    return addSecurityHeaders(response);
 
   } catch (error) {
     console.error('Pre-beta signup error:', error);
