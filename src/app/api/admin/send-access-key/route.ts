@@ -5,7 +5,6 @@ import {
   generateBrowserFingerprint, 
   getClientIP, 
   isValidEmail, 
-  sanitizeInput,
   checkRateLimit 
 } from '@/lib/admin-security';
 import { securityMiddleware, validateFormSecurity, addSecurityHeaders } from '@/lib/security-middleware';

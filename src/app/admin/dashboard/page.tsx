@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Users, 
-  Mail, 
   Clock, 
   CheckCircle, 
   BarChart3, 
@@ -50,7 +49,11 @@ interface FormAnalytics {
   fieldInteractions: Record<string, number>;
   appSelectionAnalytics: Record<string, number>;
   abandonmentPoints: Record<string, number>;
-  recentInteractions: any[];
+  recentInteractions: Array<{
+    event_type: string;
+    field_name?: string;
+    timestamp: string;
+  }>;
 }
 
 interface InviteFormData {
@@ -80,7 +83,7 @@ export default function AdminDashboard() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   // Fetch signups data
-  const fetchSignups = async () => {
+  const fetchSignups = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/signups');
       if (response.ok) {
@@ -93,10 +96,10 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // Fetch form analytics
-  const fetchFormAnalytics = async () => {
+  const fetchFormAnalytics = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/form-analytics');
       if (response.ok) {
@@ -106,7 +109,7 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error('Error fetching form analytics:', error);
     }
-  };
+  }, []);
 
   // Calculate dashboard stats
   const calculateStats = (signupData: SignupData[]) => {
@@ -184,10 +187,6 @@ export default function AdminDashboard() {
   // Get available apps
   const availableApps = Array.from(new Set(signups.map(s => s.app)));
 
-  // Get users for selected app
-  const getUsersForApp = (app: string) => {
-    return signups.filter(s => s.app === app);
-  };
 
   // Get users without emails sent
   const getUsersWithoutEmails = (app: string) => {
@@ -197,7 +196,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     fetchSignups();
     fetchFormAnalytics();
-  }, []);
+  }, [fetchSignups, fetchFormAnalytics]);
 
   // Hide toast after 3 seconds
   useEffect(() => {

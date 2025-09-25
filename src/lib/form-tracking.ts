@@ -89,9 +89,9 @@ export const useFormTracking = () => {
       };
 
       // Track user activity
-      const handleActivity = () => {
-        resetInactivityTimer();
-      };
+  const handleActivity = (): void => {
+    resetInactivityTimer();
+  };
 
       document.addEventListener('mousemove', handleActivity);
       document.addEventListener('keypress', handleActivity);
@@ -109,7 +109,7 @@ export const useFormTracking = () => {
   }, []);
 
   // Track field interactions
-  const trackFieldFocus = useCallback((fieldName: string, formData?: any) => {
+  const trackFieldFocus = useCallback((fieldName: string, formData?: Record<string, string>) => {
     if (sessionId.current) {
       // Mark form start when user first interacts
       if (formStartTime.current === 0) {
@@ -135,7 +135,7 @@ export const useFormTracking = () => {
     }
   }, []);
 
-  const trackFieldBlur = useCallback((fieldName: string, formData?: any) => {
+  const trackFieldBlur = useCallback((fieldName: string, formData?: Record<string, string>) => {
     if (sessionId.current) {
       trackFormInteraction({
         sessionId: sessionId.current,
@@ -148,7 +148,7 @@ export const useFormTracking = () => {
     }
   }, []);
 
-  const trackFormSubmit = useCallback((formData: any) => {
+  const trackFormSubmit = useCallback((formData: Record<string, string>) => {
     if (sessionId.current) {
       trackFormInteraction({
         sessionId: sessionId.current,

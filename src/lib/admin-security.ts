@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+// Use Web Crypto API instead of Node.js crypto for Edge Runtime compatibility
 
 // Generate a secure access key
 export function generateAccessKey(): string {
@@ -24,7 +24,14 @@ export function generateAccessKey(): string {
 // Generate browser fingerprint for rate limiting
 export function generateBrowserFingerprint(userAgent: string, ip: string): string {
   const data = `${userAgent}-${ip}`;
-  return crypto.createHash('sha256').update(data).digest('hex');
+  // Use a simple hash function for Edge Runtime compatibility
+  let hash = 0;
+  for (let i = 0; i < data.length; i++) {
+    const char = data.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  return Math.abs(hash).toString(16);
 }
 
 // Check if key is expired (2 minutes)
@@ -631,7 +638,7 @@ export function sanitizeInput(input: string): string {
 }
 
 // Security event logging
-export function logSecurityEvent(eventType: string, data: any): void {
+export function logSecurityEvent(eventType: string, data: Record<string, unknown>): void {
   console.warn(`SECURITY_EVENT: ${eventType}`, {
     timestamp: new Date().toISOString(),
     event: eventType,

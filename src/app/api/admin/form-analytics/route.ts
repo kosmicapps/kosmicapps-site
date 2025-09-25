@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
       },
       
       // App selection analytics
-      appSelectionAnalytics: {},
+      appSelectionAnalytics: {} as Record<string, number>,
       
       // Recent interactions
       recentInteractions: interactions.slice(0, 20),
@@ -72,7 +72,9 @@ export async function GET(request: NextRequest) {
     // Calculate app selection analytics
     const appSelections = interactions.filter(i => i.app_selection).map(i => i.app_selection);
     appSelections.forEach(app => {
-      analytics.appSelectionAnalytics[app] = (analytics.appSelectionAnalytics[app] || 0) + 1;
+      if (typeof app === 'string') {
+        analytics.appSelectionAnalytics[app] = (analytics.appSelectionAnalytics[app] || 0) + 1;
+      }
     });
 
     // Calculate abandonment points (simplified analysis)
@@ -86,7 +88,12 @@ export async function GET(request: NextRequest) {
         const fieldInteractions = sessionInteractions.filter(i => i.field_name);
         if (fieldInteractions.length > 0) {
           const lastField = fieldInteractions[fieldInteractions.length - 1].field_name;
-          analytics.abandonmentPoints[`after${lastField.charAt(0).toUpperCase() + lastField.slice(1)}`]++;
+          if (lastField) {
+            const abandonmentKey = `after${lastField.charAt(0).toUpperCase() + lastField.slice(1)}` as keyof typeof analytics.abandonmentPoints;
+            if (abandonmentKey in analytics.abandonmentPoints) {
+              analytics.abandonmentPoints[abandonmentKey]++;
+            }
+          }
         }
       }
     });

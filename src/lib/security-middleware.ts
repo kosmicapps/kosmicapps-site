@@ -31,10 +31,10 @@ export function securityMiddleware(request: NextRequest) {
 }
 
 // Enhanced security validation for form data
-export function validateFormSecurity(request: NextRequest, formData: any): { 
+export function validateFormSecurity(request: NextRequest, formData: Record<string, string>): { 
   isValid: boolean; 
   response?: NextResponse; 
-  sanitizedData?: any;
+  sanitizedData?: Record<string, string>;
 } {
   const clientIP = getClientIP(request);
   const userAgent = request.headers.get('user-agent') || '';
@@ -51,10 +51,10 @@ export function validateFormSecurity(request: NextRequest, formData: any): {
   }
   
   // Scan all form fields for threats
-  const sanitizedData: any = {};
+  const sanitizedData: Record<string, string> = {};
   let hasThreats = false;
   let shouldBan = false;
-  const allThreats: any[] = [];
+  const allThreats: Array<{ type: string; payload: string; severity: string }> = [];
   
   for (const [key, value] of Object.entries(formData)) {
     if (typeof value === 'string') {

@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     const selectedApp = apps.find(app => app.slug === sanitizedData.appSelection);
 
     // Save to Supabase database (only after successful signup process)
-    const { data: signupData, error: dbError } = await supabase
+    const { error: dbError } = await supabase
       .from('signups')
       .insert([
         {

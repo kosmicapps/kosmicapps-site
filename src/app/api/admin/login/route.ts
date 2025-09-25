@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { 
   generateBrowserFingerprint, 
   getClientIP, 
-  sanitizeInput,
   checkRateLimit,
   recordFailedAttempt,
   clearRateLimit,
