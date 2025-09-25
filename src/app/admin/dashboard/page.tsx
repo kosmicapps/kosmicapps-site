@@ -88,8 +88,11 @@ export default function AdminDashboard() {
       const response = await fetch('/api/admin/signups');
       if (response.ok) {
         const data = await response.json();
+        console.log('Fetched signups data:', data);
         setSignups(data);
         calculateStats(data);
+      } else {
+        console.error('Failed to fetch signups:', response.status, response.statusText);
       }
     } catch (error) {
       console.error('Error fetching signups:', error);
@@ -118,11 +121,20 @@ export default function AdminDashboard() {
     let totalEmailsSent = 0;
     let emailsWaiting = 0;
 
+    console.log('Calculating stats for signup data:', signupData);
+
     signupData.forEach(signup => {
       // App breakdown
       appBreakdown[signup.app] = (appBreakdown[signup.app] || 0) + 1;
       
       // Email tracking
+      console.log('Signup email tracking:', {
+        email: signup.email,
+        app: signup.app,
+        email_sent: signup.email_sent,
+        email_sent_at: signup.email_sent_at
+      });
+      
       if (signup.email_sent) {
         totalEmailsSent++;
         emailsSentByApp[signup.app] = (emailsSentByApp[signup.app] || 0) + 1;
@@ -131,13 +143,16 @@ export default function AdminDashboard() {
       }
     });
 
-    setStats({
+    const stats = {
       totalSignups: signupData.length,
       appBreakdown,
       totalEmailsSent,
       emailsWaiting,
       emailsSentByApp
-    });
+    };
+
+    console.log('Calculated stats:', stats);
+    setStats(stats);
   };
 
   // Send invites
@@ -235,16 +250,16 @@ export default function AdminDashboard() {
       {/* Header */}
       <div className="bg-white/10 backdrop-blur-lg border-b border-white/20">
         <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
             <div>
-              <h1 className="text-3xl font-poppins font-bold text-white">
+              <h1 className="text-2xl sm:text-3xl font-poppins font-bold text-white">
                 Admin Dashboard
               </h1>
               <p className="text-gray-300 mt-1">Manage pre-beta signups and invites</p>
             </div>
             <div className="flex items-center space-x-4">
               <div className="bg-white/10 rounded-lg px-4 py-2">
-                <span className="text-white text-sm">Total Signups: {stats.totalSignups}</span>
+                <span className="text-white text-sm whitespace-nowrap">Total Signups: {stats.totalSignups}</span>
               </div>
             </div>
           </div>
@@ -253,39 +268,39 @@ export default function AdminDashboard() {
 
       {/* Navigation Tabs */}
       <div className="container mx-auto px-4 py-6">
-        <div className="flex space-x-1 bg-white/10 backdrop-blur-lg rounded-xl p-1 mb-8">
+        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-1 bg-white/10 backdrop-blur-lg rounded-xl p-1 mb-8">
           <button
             onClick={() => setActiveTab('dashboard')}
-            className={`flex-1 flex items-center justify-center space-x-2 py-3 px-6 rounded-lg transition-all duration-300 ${
+            className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 sm:px-6 rounded-lg transition-all duration-300 ${
               activeTab === 'dashboard'
                 ? 'bg-white text-gray-900 shadow-lg'
                 : 'text-white hover:bg-white/10'
             }`}
           >
-            <BarChart3 className="w-5 h-5" />
-            <span className="font-semibold">Dashboard</span>
+            <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="font-semibold text-sm sm:text-base">Dashboard</span>
           </button>
           <button
             onClick={() => setActiveTab('analytics')}
-            className={`flex-1 flex items-center justify-center space-x-2 py-3 px-6 rounded-lg transition-all duration-300 ${
+            className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 sm:px-6 rounded-lg transition-all duration-300 ${
               activeTab === 'analytics'
                 ? 'bg-white text-gray-900 shadow-lg'
                 : 'text-white hover:bg-white/10'
             }`}
           >
-            <TrendingUp className="w-5 h-5" />
-            <span className="font-semibold">Form Analytics</span>
+            <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="font-semibold text-sm sm:text-base">Analytics</span>
           </button>
           <button
             onClick={() => setActiveTab('invite')}
-            className={`flex-1 flex items-center justify-center space-x-2 py-3 px-6 rounded-lg transition-all duration-300 ${
+            className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 sm:px-6 rounded-lg transition-all duration-300 ${
               activeTab === 'invite'
                 ? 'bg-white text-gray-900 shadow-lg'
                 : 'text-white hover:bg-white/10'
             }`}
           >
-            <Send className="w-5 h-5" />
-            <span className="font-semibold">Send Invites</span>
+            <Send className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="font-semibold text-sm sm:text-base">Invite</span>
           </button>
         </div>
 
@@ -456,33 +471,33 @@ export default function AdminDashboard() {
             <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6">
               <h3 className="text-xl font-semibold text-white mb-6">Conversion Funnel</h3>
               <div className="space-y-4">
-                <div className="flex items-center justify-between bg-white/5 rounded-lg p-4">
-                  <span className="text-white">Page Visits</span>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-32 bg-gray-600 rounded-full h-2">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-white/5 rounded-lg p-4 space-y-2 sm:space-y-0">
+                  <span className="text-white font-medium">Page Visits</span>
+                  <div className="flex items-center space-x-3 min-w-0">
+                    <div className="flex-1 min-w-0 max-w-32 sm:max-w-40 bg-gray-600 rounded-full h-2">
                       <div className="bg-gradient-to-r from-blue-500 to-blue-400 h-2 rounded-full" style={{ width: '100%' }}></div>
                     </div>
-                    <span className="text-white font-bold">{formAnalytics.totalPageVisits}</span>
+                    <span className="text-white font-bold text-sm sm:text-base whitespace-nowrap">{formAnalytics.totalPageVisits}</span>
                   </div>
                 </div>
                 
-                <div className="flex items-center justify-between bg-white/5 rounded-lg p-4">
-                  <span className="text-white">Form Starts</span>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-32 bg-gray-600 rounded-full h-2">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-white/5 rounded-lg p-4 space-y-2 sm:space-y-0">
+                  <span className="text-white font-medium">Form Starts</span>
+                  <div className="flex items-center space-x-3 min-w-0">
+                    <div className="flex-1 min-w-0 max-w-32 sm:max-w-40 bg-gray-600 rounded-full h-2">
                       <div className="bg-gradient-to-r from-green-500 to-green-400 h-2 rounded-full" style={{ width: `${formAnalytics.conversionRates.visitToStart}%` }}></div>
                     </div>
-                    <span className="text-white font-bold">{formAnalytics.totalFormStarts}</span>
+                    <span className="text-white font-bold text-sm sm:text-base whitespace-nowrap">{formAnalytics.totalFormStarts}</span>
                   </div>
                 </div>
                 
-                <div className="flex items-center justify-between bg-white/5 rounded-lg p-4">
-                  <span className="text-white">Form Submits</span>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-32 bg-gray-600 rounded-full h-2">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-white/5 rounded-lg p-4 space-y-2 sm:space-y-0">
+                  <span className="text-white font-medium">Form Submits</span>
+                  <div className="flex items-center space-x-3 min-w-0">
+                    <div className="flex-1 min-w-0 max-w-32 sm:max-w-40 bg-gray-600 rounded-full h-2">
                       <div className="bg-gradient-to-r from-pink-500 to-pink-400 h-2 rounded-full" style={{ width: `${formAnalytics.conversionRates.overallConversion}%` }}></div>
                     </div>
-                    <span className="text-white font-bold">{formAnalytics.totalFormSubmits}</span>
+                    <span className="text-white font-bold text-sm sm:text-base whitespace-nowrap">{formAnalytics.totalFormSubmits}</span>
                   </div>
                 </div>
               </div>
@@ -494,9 +509,9 @@ export default function AdminDashboard() {
                 <h3 className="text-xl font-semibold text-white mb-6">Field Interactions</h3>
                 <div className="space-y-3">
                   {Object.entries(formAnalytics.fieldInteractions).map(([field, count]) => (
-                    <div key={field} className="flex items-center justify-between bg-white/5 rounded-lg p-3">
-                      <span className="text-white capitalize">{field}</span>
-                      <span className="text-pink-400 font-bold">{count}</span>
+                    <div key={field} className="flex items-center justify-between bg-white/5 rounded-lg p-3 min-w-0">
+                      <span className="text-white capitalize truncate flex-1">{field}</span>
+                      <span className="text-pink-400 font-bold ml-2 whitespace-nowrap">{count}</span>
                     </div>
                   ))}
                 </div>
@@ -506,9 +521,9 @@ export default function AdminDashboard() {
                 <h3 className="text-xl font-semibold text-white mb-6">Abandonment Points</h3>
                 <div className="space-y-3">
                   {Object.entries(formAnalytics.abandonmentPoints).map(([point, count]) => (
-                    <div key={point} className="flex items-center justify-between bg-white/5 rounded-lg p-3">
-                      <span className="text-white">{point.replace('after', 'After ')}</span>
-                      <span className="text-yellow-400 font-bold">{count}</span>
+                    <div key={point} className="flex items-center justify-between bg-white/5 rounded-lg p-3 min-w-0">
+                      <span className="text-white truncate flex-1">{point.replace('after', 'After ')}</span>
+                      <span className="text-yellow-400 font-bold ml-2 whitespace-nowrap">{count}</span>
                     </div>
                   ))}
                 </div>
@@ -533,19 +548,19 @@ export default function AdminDashboard() {
               <h3 className="text-xl font-semibold text-white mb-6">Recent Interactions</h3>
               <div className="space-y-3">
                 {formAnalytics.recentInteractions.slice(0, 10).map((interaction, index) => (
-                  <div key={index} className="flex items-center justify-between bg-white/5 rounded-lg p-3">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-xs">
+                  <div key={index} className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-white/5 rounded-lg p-3 space-y-2 sm:space-y-0">
+                    <div className="flex items-center space-x-3 min-w-0">
+                      <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
                         {interaction.event_type.charAt(0).toUpperCase()}
                       </div>
-                      <div>
-                        <p className="text-white text-sm">{interaction.event_type.replace('_', ' ')}</p>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-white text-sm truncate">{interaction.event_type.replace('_', ' ')}</p>
                         {interaction.field_name && (
-                          <p className="text-gray-300 text-xs">Field: {interaction.field_name}</p>
+                          <p className="text-gray-300 text-xs truncate">Field: {interaction.field_name}</p>
                         )}
                       </div>
                     </div>
-                    <span className="text-gray-400 text-xs">
+                    <span className="text-gray-400 text-xs whitespace-nowrap ml-11 sm:ml-0">
                       {new Date(interaction.timestamp).toLocaleString()}
                     </span>
                   </div>

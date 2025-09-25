@@ -134,13 +134,15 @@ export async function POST(request: NextRequest) {
           emailsSent++;
           
           // Update all users with this email (handle duplicates)
-          await supabase
+          const updateResult = await supabase
             .from('signups')
             .update({ 
               email_sent: true, 
               email_sent_at: new Date().toISOString() 
             })
             .eq('email', email);
+            
+          console.log(`Updated email_sent for ${email}:`, updateResult);
         }
       } catch (error) {
         console.error(`Error processing email ${email}:`, error);
