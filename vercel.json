@@ -1,5 +1,5 @@
 {
-    "rewrites": [
-      { "source": "/auth/callback", "destination": "/api/oauth" }
-    ]
-  }
+  "rewrites": [
+    { "source": "/auth/callback", "destination": "/api/oauth" }
+  ]
+}
