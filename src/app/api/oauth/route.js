@@ -2,16 +2,24 @@ export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
   const state = searchParams.get("state");
-  const platform = searchParams.get("platform");
+  let platform = searchParams.get("platform");
 
-  // Platform-aware redirect with Notion OAuth added
+  // Extract platform from state if not provided directly
+  // Format: "platform:cloutmate_platform_abc123"
+  if (!platform && state) {
+    const stateMatch = state.match(/^([^:]+):/);
+    if (stateMatch) {
+      platform = stateMatch[1];
+    }
+  }
+
   let redirect;
   switch (platform) {
-    case "threads":
-      redirect = `cloutmate://oauth/threads?code=${code || ""}&state=${state || ""}`;
-      break;
     case "notion":
       redirect = `cloutmate://oauth/notion?code=${code || ""}&state=${state || ""}`;
+      break;
+    case "threads":
+      redirect = `cloutmate://oauth/threads?code=${code || ""}&state=${state || ""}`;
       break;
     case "facebook":
     default:
@@ -19,8 +27,5 @@ export async function GET(request) {
       break;
   }
 
-  return new Response(null, {
-    status: 302,
-    headers: { Location: redirect },
-  });
+  return new Response(null, { status: 302, headers: { Location: redirect } });
 }
