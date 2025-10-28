@@ -4,11 +4,14 @@ export async function GET(request) {
   const state = searchParams.get("state");
   const platform = searchParams.get("platform");
 
-  // Platform-aware redirect
+  // Platform-aware redirect with Notion OAuth added
   let redirect;
   switch (platform) {
     case "threads":
       redirect = `cloutmate://oauth/threads?code=${code || ""}&state=${state || ""}`;
+      break;
+    case "notion":
+      redirect = `cloutmate://oauth/notion?code=${code || ""}&state=${state || ""}`;
       break;
     case "facebook":
     default:
